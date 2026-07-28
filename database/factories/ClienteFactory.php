@@ -1,0 +1,22 @@
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Cliente;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class ClienteFactory extends Factory
+{
+    protected $model = Cliente::class;
+
+    public function definition(): array
+    {
+        return [
+            'tipo_persona' => fake()->randomElement(['natural', 'juridica']),
+            'nombre' => fake()->name(),
+            'email' => fake()->unique()->safeEmail(),
+            'telefono' => fake()->phoneNumber(),
+            'documento' => fake()->unique()->numerify('########'),
+        ];
+    }
+}
