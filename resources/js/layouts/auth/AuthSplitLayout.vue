@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { Link, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 import { ShieldCheck, Camera, Wrench, ScanQrCode } from '@lucide/vue';
-import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import { home } from '@/routes';
 
-const page = usePage();
-const name = page.props.name;
+usePage();
 
 defineProps<{
     title?: string;
@@ -88,7 +86,7 @@ defineProps<{
                 </div>
 
                 <div class="text-xs text-zinc-600">
-                    &copy; {{ new Date().getFullYear() }} ControlCatálogo &mdash; Todos los derechos reservados
+                    &copy; {{ new Date().getFullYear() }} DOMOTECH &mdash; Todos los derechos reservados
                 </div>
             </div>
         </div>

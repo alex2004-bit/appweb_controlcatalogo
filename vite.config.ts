@@ -4,31 +4,53 @@ import tailwindcss from '@tailwindcss/vite';
 import vue from '@vitejs/plugin-vue';
 import laravel from 'laravel-vite-plugin';
 import { bunny } from 'laravel-vite-plugin/fonts';
-import { defineConfig } from 'vite';
+import { defineConfig, loadEnv } from 'vite';
 
-export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.ts'],
-            refresh: true,
-            fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
-                }),
-            ],
-        }),
-        inertia(),
-        tailwindcss(),
-        vue({
-            template: {
-                transformAssetUrls: {
-                    base: null,
-                    includeAbsolute: false,
-                },
+export default defineConfig(({ mode }) => {
+    const env = loadEnv(mode, process.cwd(), '');
+    const appOrigin = new URL(env.APP_URL ?? 'http://localhost:8013').origin;
+
+    return {
+        server: {
+            host: '0.0.0.0',
+            port: 5173,
+            strictPort: true,
+            hmr: {
+                host: env.VITE_HMR_HOST ?? 'localhost',
+                clientPort: 5173,
             },
-        }),
-        wayfinder({
-            formVariants: true,
-        }),
-    ],
+            cors: {
+                origin: [
+                    appOrigin,
+                    'http://127.0.0.2:8013',
+                    'http://localhost:8013',
+                    'http://0.0.0.0:8013',
+                ],
+            },
+        },
+        plugins: [
+            laravel({
+                input: ['resources/css/app.css', 'resources/js/app.ts'],
+                refresh: true,
+                fonts: [
+                    bunny('Instrument Sans', {
+                        weights: [400, 500, 600],
+                    }),
+                ],
+            }),
+            inertia(),
+            tailwindcss(),
+            vue({
+                template: {
+                    transformAssetUrls: {
+                        base: null,
+                        includeAbsolute: false,
+                    },
+                },
+            }),
+            wayfinder({
+                formVariants: true,
+            }),
+        ],
+    };
 });

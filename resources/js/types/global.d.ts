@@ -1,5 +1,10 @@
 import type { Auth } from '@/types/auth';
 import type { Team } from '@/types/teams';
+import type { route as routeFunction } from '../../../vendor/tightenco/ziggy/src/js/index';
+
+declare global {
+    var route: typeof routeFunction;
+}
 
 // Extend ImportMeta interface for Vite...
 declare module 'vite/client' {
@@ -25,6 +30,14 @@ declare module '@inertiajs/core' {
             [key: string]: unknown;
         };
     }
+
+    export interface PageProps {
+        flash?: {
+            clearCart?: boolean;
+            [key: string]: unknown;
+        };
+        [key: string]: unknown;
+    }
 }
 
 declare module 'vue' {
@@ -32,5 +45,6 @@ declare module 'vue' {
         $inertia: typeof Router;
         $page: Page;
         $headManager: ReturnType<typeof createHeadManager>;
+        route: typeof routeFunction;
     }
 }

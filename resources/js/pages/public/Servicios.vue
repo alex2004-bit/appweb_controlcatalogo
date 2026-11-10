@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { Wrench, Check, Clock, DollarSign, MessageCircle } from '@lucide/vue';
+import { Wrench, Check, Clock, MessageCircle } from '@lucide/vue';
 import { ref } from 'vue';
+import { useMoney } from '@/composables/useMoney';
 
 const props = defineProps<{
     servicios: {
@@ -18,12 +19,13 @@ const props = defineProps<{
     categorias: { id: number; nombre: string; slug: string }[];
 }>();
 
-const whatsappNumber = '521XXXXXXXXXX';
+const whatsappNumber = '59164828148';
 const selectedCategoria = ref<string | null>(null);
 const filteredServicios = ref(props.servicios);
 
 function filterByCategoria(slug: string | null) {
     selectedCategoria.value = slug;
+
     if (!slug) {
         filteredServicios.value = props.servicios;
     } else {
@@ -31,16 +33,16 @@ function filterByCategoria(slug: string | null) {
     }
 }
 
-const defaultImg = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop';
+const money = useMoney();
 </script>
 
 <template>
-    <Head title="Servicios - ControlCatálogo" />
+    <Head title="Servicios" />
 
     <div class="min-h-screen bg-gray-50">
         <!-- Header -->
         <section class="bg-white border-b border-gray-200 py-10">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
                     <Link href="/" class="hover:text-blue-600 transition">Inicio</Link>
                     <span>/</span>
@@ -56,7 +58,7 @@ const defaultImg = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158
 
         <!-- Category Filter -->
         <section v-if="categorias.length > 0" class="bg-white border-b border-gray-200">
-            <div class="mx-auto w-full max-w-[1400px] px-6 py-4">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6 py-4">
                 <div class="flex flex-wrap items-center gap-2">
                     <button
                         @click="filterByCategoria(null)"
@@ -80,18 +82,18 @@ const defaultImg = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158
 
         <!-- Services Grid -->
         <section class="py-12">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <div v-if="filteredServicios.length === 0" class="text-center py-20">
                     <Wrench class="mx-auto h-12 w-12 text-gray-300" />
                     <h3 class="mt-4 text-lg font-semibold text-gray-900">Sin servicios</h3>
                     <p class="mt-1 text-sm text-gray-500">No hay servicios disponibles en esta categoría.</p>
                 </div>
 
-                <div v-else class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                <div v-else class="grid grid-cols-1 gap-4 min-[375px]:grid-cols-2 sm:gap-6 md:grid-cols-3 xl:grid-cols-4">
                     <div
                         v-for="s in filteredServicios"
                         :key="s.id"
-                        class="group bg-white rounded-xl border border-gray-200 p-6 transition-all duration-300 hover:shadow-xl hover:shadow-amber-500/5 hover:-translate-y-1"
+                        class="group min-w-0 rounded-xl border border-gray-200 bg-white p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-amber-500/5 sm:p-6"
                     >
                         <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
                             <Wrench class="h-6 w-6" />
@@ -112,8 +114,7 @@ const defaultImg = 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158
                         <div class="mt-5 pt-5 border-t border-gray-100">
                             <div class="flex items-center justify-between">
                                 <div class="flex items-center gap-2 text-xs">
-                                    <DollarSign class="h-3.5 w-3.5 text-amber-600" />
-                                    <span class="text-gray-900 font-bold">${{ parseFloat(s.precio).toLocaleString('es-MX', { minimumFractionDigits: 2 }) }}</span>
+                                    <span class="text-gray-900 font-bold">{{ money.format(s.precio) }}</span>
                                 </div>
                                 <div v-if="s.duracion_estimada" class="flex items-center gap-1 text-xs text-gray-400">
                                     <Clock class="h-3 w-3" />

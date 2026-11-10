@@ -16,7 +16,7 @@ class UpdateCategoriaRequest extends FormRequest
         return [
             'nombre' => ['required', 'string', 'max:255'],
             'descripcion' => ['nullable', 'string', 'max:1000'],
-            'imagen' => ['nullable', 'string', 'max:255'],
+            'imagen' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'parent_id' => ['nullable', 'integer', 'exists:categorias,id'],
             'activo' => ['boolean'],
         ];

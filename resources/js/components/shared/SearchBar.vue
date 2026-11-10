@@ -34,7 +34,7 @@ function onInput(e: Event) {
 
 <template>
     <div class="relative">
-        <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+        <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" />
         <Input
             :placeholder="placeholder ?? 'Buscar...'"
             class="pl-8 w-64"

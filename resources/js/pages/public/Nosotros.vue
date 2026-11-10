@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Head, Link } from '@inertiajs/vue3';
-import { ShieldCheck, Users, Award, Target, Eye, Heart, Building2, CheckCircle } from '@lucide/vue';
+import { ShieldCheck, Users, Award, Target, Eye, Heart, Building2 } from '@lucide/vue';
 
 const values = [
     { icon: ShieldCheck, titulo: 'Seguridad', desc: 'Compromiso con la protección de personas y bienes mediante soluciones confiables.' },
@@ -19,12 +19,12 @@ const timeline = [
 </script>
 
 <template>
-    <Head title="Nosotros - ControlCatálogo" />
+    <Head title="Nosotros" />
 
     <div class="min-h-screen bg-gray-50">
         <!-- Header -->
         <section class="bg-white border-b border-gray-200 py-10">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
                     <Link href="/" class="hover:text-blue-600 transition">Inicio</Link>
                     <span>/</span>
@@ -33,14 +33,14 @@ const timeline = [
                 <div class="inline-flex items-center gap-2 rounded-full bg-blue-100 px-3.5 py-1 text-xs font-semibold text-blue-700">
                     <Building2 class="h-3 w-3" /> Nosotros
                 </div>
-                <h1 class="mt-3 text-3xl font-bold text-gray-900">Conoce ControlCatálogo</h1>
+                <h1 class="mt-3 text-3xl font-bold text-gray-900">Conoce DOMOTECH</h1>
                 <p class="mt-1 text-sm text-gray-500">Somos especialistas en seguridad electrónica y videovigilancia</p>
             </div>
         </section>
 
         <!-- Mission & Vision -->
         <section class="py-16">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <div class="grid gap-8 md:grid-cols-2">
                     <div class="rounded-xl border border-gray-200 bg-white p-8">
                         <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
@@ -68,13 +68,13 @@ const timeline = [
 
         <!-- Values -->
         <section class="bg-white border-t border-gray-200 py-16">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-2xl font-bold text-gray-900">Nuestros Valores</h2>
                     <p class="mt-2 text-sm text-gray-500">Principios que guían cada proyecto</p>
                 </div>
                 <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                    <div v-for="v in values" :key="v.titulo" class="rounded-xl border border-gray-200 bg-white p-6 text-center transition hover:shadow-lg hover:-translate-y-1">
+                    <div v-for="v in values" :key="v.titulo" class="rounded-xl border border-gray-200 bg-white p-4 text-center transition hover:-translate-y-1 hover:shadow-lg sm:p-6">
                         <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600">
                             <component :is="v.icon" class="h-6 w-6" />
                         </div>
@@ -87,7 +87,7 @@ const timeline = [
 
         <!-- Timeline -->
         <section class="py-16">
-            <div class="mx-auto max-w-3xl px-6">
+            <div class="mx-auto max-w-3xl px-4 sm:px-6">
                 <div class="text-center mb-12">
                     <h2 class="text-2xl font-bold text-gray-900">Nuestra Historia</h2>
                     <p class="mt-2 text-sm text-gray-500">Más de 10 años de experiencia</p>

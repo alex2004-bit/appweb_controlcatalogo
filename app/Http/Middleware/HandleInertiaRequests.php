@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\Configuracion;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Spatie\Permission\Models\Role;
@@ -29,6 +30,7 @@ class HandleInertiaRequests extends Middleware
             'currentTeam' => fn () => $user?->currentTeam ? $user->toUserTeam($user->currentTeam) : null,
             'teams' => fn () => $user?->toUserTeams(includeCurrent: true) ?? [],
             'roles' => fn () => $user ? Role::with('permissions')->get() : [],
+            'configuracion' => fn () => Configuracion::query()->first()?->only('qr_pago', 'whatsapp', 'moneda', 'impuesto') ?? ['qr_pago' => null, 'whatsapp' => null, 'moneda' => 'Bs', 'impuesto' => 18],
         ];
     }
 }

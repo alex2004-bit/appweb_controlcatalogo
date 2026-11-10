@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { Wrench, Plus, Pencil, Trash2, Search, Grid3X3, List, X, Clock } from '@lucide/vue';
+import { Wrench, Plus, Pencil, Trash2, Search, X } from '@lucide/vue';
+import { ref, computed } from 'vue';
+import { ConfirmDeleteDialog, Pagination, ModuleHeader } from '@/components/shared';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,132 +12,113 @@ import {
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { ConfirmDeleteDialog, Pagination, PageTransition, StaggerTransition, ModuleHeader } from '@/components/shared';
+import { useMoney } from '@/composables/useMoney';
 import type { PaginatedData } from '@/types';
 
 type Servicio = { id: number; nombre: string; descripcion: string | null; precio: string | null; duracion_estimada: string | null; activo: boolean; imagen: string | null; categoria?: { id: number; nombre: string } | null; };
 type Props = { servicios: PaginatedData<Servicio>; filters: { search: string | null; estado: string | null } };
 const props = defineProps<Props>();
 
-const viewMode = ref<'grid' | 'list'>('grid');
 const search = ref(props.filters.search ?? '');
 const estadoFilter = ref(props.filters.estado ?? 'all');
 
 let st: number | undefined;
-function onSearch() { clearTimeout(st); st = window.setTimeout(() => router.get(route('admin.catalogo.servicios.index'), { search: search.value || null, estado: estadoFilter.value === 'all' ? null : estadoFilter.value }, { preserveState: true, replace: true }), 400); }
+function onSearch() {
+ clearTimeout(st); st = window.setTimeout(() => router.get(route('admin.catalogo.servicios.index'), { search: search.value || null, estado: estadoFilter.value === 'all' ? null : estadoFilter.value }, { preserveState: true, replace: true }), 400);
+}
 const hasFilters = computed(() => search.value || (estadoFilter.value && estadoFilter.value !== 'all'));
-function clearFilters() { search.value = ''; estadoFilter.value = 'all'; router.get(route('admin.catalogo.servicios.index'), {}, { preserveState: true, replace: true }); }
+function clearFilters() {
+ search.value = ''; estadoFilter.value = 'all'; router.get(route('admin.catalogo.servicios.index'), {}, { preserveState: true, replace: true });
+}
 
 const deleteId = ref<number | null>(null);
 const showDelete = ref(false);
-function confirmDelete(id: number) { deleteId.value = id; showDelete.value = true; }
-function executeDelete() { if (deleteId.value) router.delete(route('admin.catalogo.servicios.destroy', deleteId.value), { preserveScroll: true, onSuccess: () => { showDelete.value = false; deleteId.value = null; } }); }
+
+const { format } = useMoney();
+
+function confirmDelete(id: number) {
+  deleteId.value = id; showDelete.value = true;
+}
+function executeDelete() {
+  if (deleteId.value) {
+router.delete(route('admin.catalogo.servicios.destroy', deleteId.value), { preserveScroll: true, onSuccess: () => {
+  showDelete.value = false; deleteId.value = null;
+} });
+}
+}
 </script>
 
 <template>
     <Head title="Servicios" />
-    <PageTransition>
-        <div class="flex flex-col gap-6 p-4 sm:p-6">
-            <ModuleHeader title="Servicios" description="Catálogo de servicios profesionales" :icon="Wrench" gradient="from-amber-500 to-orange-600">
-                <template #actions>
-                    <div class="flex items-center gap-2">
-                        <div class="hidden sm:flex items-center rounded-xl border border-border bg-card p-1">
-                            <Button variant="ghost" size="sm" class="h-8 w-8 p-0 rounded-lg" :class="viewMode === 'grid' ? 'bg-accent' : ''" @click="viewMode = 'grid'"><Grid3X3 class="h-4 w-4" /></Button>
-                            <Button variant="ghost" size="sm" class="h-8 w-8 p-0 rounded-lg" :class="viewMode === 'list' ? 'bg-accent' : ''" @click="viewMode = 'list'"><List class="h-4 w-4" /></Button>
-                        </div>
-                        <Link :href="route('admin.catalogo.servicios.create')">
-                            <Button class="bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-lg shadow-amber-500/25 hover:from-amber-600 hover:to-orange-700 rounded-xl h-10">
-                                <Plus class="mr-2 h-4 w-4" /> Nuevo Servicio
-                            </Button>
-                        </Link>
-                    </div>
-                </template>
-            </ModuleHeader>
+    <div class="flex flex-col gap-6">
+        <ModuleHeader title="Servicios" description="Catálogo de servicios profesionales" :icon="Wrench">
+            <template #actions>
+                <Link :href="route('admin.catalogo.servicios.create')">
+                    <Button class="bg-blue-600 text-white hover:bg-blue-700 shadow-sm rounded-lg h-10">
+                        <Plus class="mr-2 h-4 w-4" /> Nuevo Servicio
+                    </Button>
+                </Link>
+            </template>
+        </ModuleHeader>
 
-            <div class="flex flex-wrap items-center gap-3">
-                <div class="relative flex-1 min-w-[200px] max-w-md">
-                    <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
-                    <Input v-model="search" placeholder="Buscar servicios..." class="h-10 rounded-xl border-input bg-card pl-10 text-sm" @input="onSearch" />
-                </div>
-                <Select v-model="estadoFilter" @update:model-value="onSearch">
-                    <SelectTrigger class="h-10 rounded-xl border-input bg-card w-32"><SelectValue placeholder="Estado" /></SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="all">Todos</SelectItem><SelectItem value="activo">Activos</SelectItem><SelectItem value="inactivo">Inactivos</SelectItem>
-                    </SelectContent>
-                </Select>
-                <Button v-if="hasFilters" variant="ghost" size="sm" class="h-10 rounded-xl" @click="clearFilters"><X class="mr-1.5 h-4 w-4" />Limpiar</Button>
+        <div class="flex flex-wrap items-center gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+            <div class="relative flex-1 min-w-[200px] max-w-md">
+                <Search class="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Input v-model="search" placeholder="Buscar servicios..." class="h-10 rounded-lg border-gray-300 bg-white pl-10 text-sm" @input="onSearch" />
             </div>
+            <Select v-model="estadoFilter" @update:model-value="onSearch">
+                <SelectTrigger class="h-10 rounded-lg border-gray-300 bg-white w-32"><SelectValue placeholder="Estado" /></SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="all">Todos</SelectItem><SelectItem value="activo">Activos</SelectItem><SelectItem value="inactivo">Inactivos</SelectItem>
+                </SelectContent>
+            </Select>
+            <Button v-if="hasFilters" variant="ghost" size="sm" class="h-10 rounded-lg text-gray-500 hover:text-gray-700" @click="clearFilters"><X class="mr-1.5 h-4 w-4" />Limpiar</Button>
+        </div>
 
-            <div v-if="viewMode === 'grid'">
-                <StaggerTransition tag="div" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    <div v-for="s in servicios.data" :key="s.id" class="group relative overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-                        <div class="relative aspect-video overflow-hidden bg-gradient-to-br from-amber-500/10 to-orange-600/10">
-                            <div class="flex h-full items-center justify-center">
-                                <Wrench class="h-12 w-12 text-amber-500/30" />
-                            </div>
-                            <div class="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                                <Link :href="route('admin.catalogo.servicios.edit', s.id)">
-                                    <Button variant="secondary" size="icon" class="h-8 w-8 rounded-xl bg-white/90 hover:bg-white text-gray-700 shadow-sm"><Pencil class="h-3.5 w-3.5" /></Button>
-                                </Link>
-                                <Button variant="secondary" size="icon" class="h-8 w-8 rounded-xl bg-white/90 hover:bg-white text-red-500 shadow-sm" @click="confirmDelete(s.id)"><Trash2 class="h-3.5 w-3.5" /></Button>
-                            </div>
-                        </div>
-                        <div class="p-4">
-                            <div class="flex items-start justify-between gap-2">
-                                <h3 class="text-sm font-semibold text-foreground truncate">{{ s.nombre }}</h3>
-                                <p class="shrink-0 text-sm font-bold text-amber-400">{{ s.precio ? '$' + s.precio : '—' }}</p>
-                            </div>
-                            <p v-if="s.descripcion" class="mt-1 text-xs text-muted-foreground line-clamp-2">{{ s.descripcion }}</p>
-                            <div class="mt-3 flex items-center justify-between">
-                                <span v-if="s.duracion_estimada" class="inline-flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-0.5 rounded-md">
-                                    <Clock class="h-3 w-3" /> {{ s.duracion_estimada }}
-                                </span>
-                                <Badge :class="s.activo ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/20 border' : 'bg-slate-500/15 text-slate-400 border-slate-500/20 border'" class="shadow-none text-[10px]">
+        <div class="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+            <div class="overflow-x-auto">
+                <Table>
+                    <TableHeader>
+                        <TableRow class="bg-gray-50 border-b border-gray-200">
+                            <TableHead class="text-xs font-semibold uppercase tracking-wider text-gray-500 py-3">Nombre</TableHead>
+                            <TableHead class="text-xs font-semibold uppercase tracking-wider text-gray-500 py-3">Precio</TableHead>
+                            <TableHead class="text-xs font-semibold uppercase tracking-wider text-gray-500 py-3">Duración</TableHead>
+                            <TableHead class="text-xs font-semibold uppercase tracking-wider text-gray-500 py-3">Estado</TableHead>
+                            <TableHead class="text-right text-xs font-semibold uppercase tracking-wider text-gray-500 py-3">Acciones</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        <TableRow v-for="s in servicios.data" :key="s.id" class="border-b border-gray-100 transition-colors hover:bg-gray-50">
+                            <TableCell class="font-medium text-gray-900">{{ s.nombre }}</TableCell>
+                            <TableCell class="text-blue-600 font-medium">{{ s.precio ? format(s.precio) : '—' }}</TableCell>
+                            <TableCell class="text-gray-500">{{ s.duracion_estimada ?? '—' }}</TableCell>
+                            <TableCell>
+                                <Badge :class="s.activo ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'" class="shadow-none rounded-md px-2.5 py-0.5 text-xs font-medium">
                                     {{ s.activo ? 'Activo' : 'Inactivo' }}
                                 </Badge>
-                            </div>
-                        </div>
-                    </div>
-                </StaggerTransition>
-                <div v-if="!servicios.data.length" class="flex flex-col items-center justify-center py-20 text-center">
-                    <Wrench class="h-16 w-16 text-muted-foreground/20 mb-4" />
-                    <h3 class="text-lg font-semibold text-foreground">No hay servicios</h3>
-                    <p class="mt-1 text-sm text-muted-foreground">Crea tu primer servicio.</p>
-                </div>
-                <Pagination :pagination="servicios" class="mt-4" />
+                            </TableCell>
+                            <TableCell class="text-right">
+                                <div class="flex justify-end gap-2">
+                                    <Link :href="route('admin.catalogo.servicios.edit', s.id)">
+                                        <Button variant="outline" size="sm" class="h-9 w-9 rounded-lg border-gray-200 p-0 text-gray-600 hover:text-blue-600 hover:border-blue-300"><Pencil class="h-4 w-4" /></Button>
+                                    </Link>
+                                    <Button variant="outline" size="sm" class="h-9 w-9 rounded-lg border-gray-200 p-0 text-gray-600 hover:text-red-600 hover:border-red-300" @click="confirmDelete(s.id)"><Trash2 class="h-4 w-4" /></Button>
+                                </div>
+                            </TableCell>
+                        </TableRow>
+                        <TableRow v-if="!servicios.data.length">
+                            <TableCell colspan="5" class="py-16 text-center text-gray-500">
+                                <Wrench class="mx-auto h-12 w-12 text-gray-300 mb-3" />
+                                <p class="font-medium text-gray-900">No hay servicios</p>
+                                <p class="text-sm text-gray-500 mt-1">Crea tu primer servicio.</p>
+                            </TableCell>
+                        </TableRow>
+                    </TableBody>
+                </Table>
             </div>
-
-            <div v-else class="overflow-hidden rounded-2xl border border-border/50 bg-card shadow-sm">
-                <div class="overflow-x-auto">
-                    <Table>
-                        <TableHeader>
-                            <TableRow class="border-border/50 hover:bg-transparent">
-                                <TableHead class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Nombre</TableHead>
-                                <TableHead class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Precio</TableHead>
-                                <TableHead class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Duración</TableHead>
-                                <TableHead class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Estado</TableHead>
-                                <TableHead class="text-right text-xs font-semibold uppercase tracking-wider text-muted-foreground">Acciones</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            <TableRow v-for="s in servicios.data" :key="s.id" class="border-border/30 transition-colors hover:bg-accent/50">
-                                <TableCell class="font-medium text-foreground">{{ s.nombre }}</TableCell>
-                                <TableCell class="text-amber-400 font-medium">{{ s.precio ? '$' + s.precio : '—' }}</TableCell>
-                                <TableCell class="text-muted-foreground">{{ s.duracion_estimada ?? '—' }}</TableCell>
-                                <TableCell><Badge :class="s.activo ? 'bg-emerald-500/15 text-emerald-500 border-emerald-500/20 border' : 'bg-slate-500/15 text-slate-400 border-slate-500/20 border'" class="shadow-none">{{ s.activo ? 'Activo' : 'Inactivo' }}</Badge></TableCell>
-                                <TableCell class="text-right"><div class="flex justify-end gap-2">
-                                    <Link :href="route('admin.catalogo.servicios.edit', s.id)"><Button variant="outline" size="sm" class="rounded-xl border-border bg-card"><Pencil class="h-4 w-4" /></Button></Link>
-                                    <Button variant="destructive" size="sm" class="rounded-xl" @click="confirmDelete(s.id)"><Trash2 class="h-4 w-4" /></Button>
-                                </div></TableCell>
-                            </TableRow>
-                            <TableRow v-if="!servicios.data.length"><TableCell colspan="5" class="py-12 text-center text-muted-foreground">No hay servicios registrados.</TableCell></TableRow>
-                        </TableBody>
-                    </Table>
-                </div>
-                <div class="border-t border-border/50 p-4"><Pagination :pagination="servicios" /></div>
-            </div>
-
-            <ConfirmDeleteDialog :open="showDelete" title="Eliminar Servicio" description="¿Estás seguro?" @confirm="executeDelete" @cancel="showDelete = false" />
+            <Pagination :pagination="servicios" />
         </div>
-    </PageTransition>
+
+        <ConfirmDeleteDialog :open="showDelete" title="Eliminar Servicio" description="¿Estás seguro?" @confirm="executeDelete" @cancel="showDelete = false" />
+    </div>
 </template>

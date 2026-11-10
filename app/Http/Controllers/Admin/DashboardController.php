@@ -22,8 +22,9 @@ class DashboardController extends Controller
             ->sum('monto');
 
         $pagosPendientes = Cotizacion::where('estado', '!=', 'rechazada')
+            ->withSum('pagos as total_pagado', 'monto')
             ->get()
-            ->sum(fn ($c) => $c->saldo_pendiente);
+            ->sum(fn ($c) => max(0, (float) $c->total - (float) ($c->total_pagado ?? 0)));
 
         return Inertia::render('admin/dashboard/Index', [
             'stats' => [

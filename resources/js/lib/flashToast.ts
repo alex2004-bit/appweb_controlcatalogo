@@ -7,9 +7,12 @@ export function initializeFlashToast(): void {
         const flash = (event as CustomEvent).detail?.flash;
         const data = flash?.toast as FlashToast | undefined;
 
-        if (!data) return;
+        if (!data) {
+return;
+}
 
         const type = data.type as 'success' | 'error' | 'info' | 'warning';
+
         if (['success', 'error', 'info', 'warning'].includes(type)) {
             toast[type](data.message, {
                 duration: 4000,

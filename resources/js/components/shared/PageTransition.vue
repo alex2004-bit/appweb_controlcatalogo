@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Transition } from 'vue';
-
 withDefaults(defineProps<{
     appear?: boolean;
 }>(), {

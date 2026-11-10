@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\Abastecimiento\CompraController;
+use App\Http\Controllers\Admin\Abastecimiento\ProveedorController;
 use App\Http\Controllers\Admin\Catalogo\CategoriaController;
 use App\Http\Controllers\Admin\Catalogo\GaleriaController;
 use App\Http\Controllers\Admin\Catalogo\MarcaController;
@@ -7,6 +9,7 @@ use App\Http\Controllers\Admin\Catalogo\ProductoController;
 use App\Http\Controllers\Admin\Catalogo\ServicioController;
 use App\Http\Controllers\Admin\Clientes\ClienteController;
 use App\Http\Controllers\Admin\Clientes\ConsultaController;
+use App\Http\Controllers\Admin\Clientes\CotizacionController;
 use App\Http\Controllers\Admin\Configuracion\EmpresaController;
 use App\Http\Controllers\Admin\Configuracion\GeneralesController;
 use App\Http\Controllers\Admin\Configuracion\SocialController;
@@ -17,6 +20,7 @@ use App\Http\Controllers\Admin\Pedidos\PedidoController;
 use App\Http\Controllers\Admin\Seguridad\PermissionController;
 use App\Http\Controllers\Admin\Seguridad\RoleController;
 use App\Http\Controllers\Admin\Seguridad\UserController;
+use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\Teams\TeamInvitationController;
 use App\Http\Middleware\EnsureTeamMembership;
@@ -30,8 +34,14 @@ Route::get('ofertas', [PublicController::class, 'offers'])->name('ofertas');
 Route::get('servicios', [PublicController::class, 'services'])->name('servicios');
 Route::get('nosotros', [PublicController::class, 'nosotros'])->name('nosotros');
 Route::get('contacto', [PublicController::class, 'contacto'])->name('contacto');
-Route::post('contacto', [PublicController::class, 'sendContact'])->name('contacto.send');
+Route::post('contacto', [PublicController::class, 'sendContact'])
+    ->name('contacto.send')
+    ->middleware('throttle:5,1');
+Route::post('cotizar', [PublicController::class, 'storeCotizacion'])
+    ->name('cotizar')
+    ->middleware('throttle:10,1'); // 10 requests per minute per IP
 Route::get('menu-data', [PublicController::class, 'menuData'])->name('menu.data');
+Route::post('logout', [LogoutController::class, 'destroy'])->name('logout');
 
 Route::prefix('{current_team}')
     ->middleware(['auth', 'verified', EnsureTeamMembership::class])
@@ -84,13 +94,25 @@ Route::prefix('{current_team}')
             });
 
             Route::prefix('pedidos')->name('pedidos.')->group(function () {
-                Route::get('pedidos', [PedidoController::class, 'index'])->name('index');
-                Route::get('pedidos/create', [PedidoController::class, 'create'])->name('create');
-                Route::post('pedidos', [PedidoController::class, 'store'])->name('store');
-                Route::get('pedidos/{pedido}', [PedidoController::class, 'show'])->name('show');
-                Route::get('pedidos/{pedido}/edit', [PedidoController::class, 'edit'])->name('edit');
-                Route::put('pedidos/{pedido}', [PedidoController::class, 'update'])->name('update');
-                Route::delete('pedidos/{pedido}', [PedidoController::class, 'destroy'])->name('destroy');
+                Route::get('/', [PedidoController::class, 'index'])->name('index');
+                Route::get('create', [PedidoController::class, 'create'])->name('create');
+                Route::post('/', [PedidoController::class, 'store'])->name('store');
+                Route::get('{pedido}', [PedidoController::class, 'show'])->name('show');
+                Route::get('{pedido}/edit', [PedidoController::class, 'edit'])->name('edit');
+                Route::put('{pedido}', [PedidoController::class, 'update'])->name('update');
+                Route::delete('{pedido}', [PedidoController::class, 'destroy'])->name('destroy');
+            });
+
+            Route::prefix('abastecimiento')->name('abastecimiento.')->group(function () {
+                Route::resource('proveedores', ProveedorController::class)
+                    ->except(['show'])
+                    ->parameters(['proveedores' => 'proveedor']);
+                Route::get('compras', [CompraController::class, 'index'])->name('compras.index');
+                Route::get('compras/create', [CompraController::class, 'create'])->name('compras.create');
+                Route::post('compras', [CompraController::class, 'store'])->name('compras.store');
+                Route::get('compras/{compra}', [CompraController::class, 'show'])->name('compras.show');
+                Route::post('compras/{compra}/recibir', [CompraController::class, 'receive'])->name('compras.receive');
+                Route::post('compras/{compra}/cancelar', [CompraController::class, 'cancel'])->name('compras.cancel');
             });
 
             Route::prefix('finanzas')->name('finanzas.')->group(function () {

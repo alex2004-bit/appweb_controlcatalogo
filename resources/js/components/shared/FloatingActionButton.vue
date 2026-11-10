@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Plus, X } from '@lucide/vue';
+import { Plus } from '@lucide/vue';
 import { ref } from 'vue';
 import { Button } from '@/components/ui/button';
 
@@ -10,7 +10,7 @@ type Action = {
     color?: string;
 };
 
-const props = withDefaults(defineProps<{
+withDefaults(defineProps<{
     actions?: Action[];
     position?: 'br' | 'bl' | 'tr' | 'tl';
 }>(), {
@@ -21,10 +21,10 @@ const props = withDefaults(defineProps<{
 const open = ref(false);
 
 const positionClasses: Record<string, string> = {
-    br: 'bottom-6 right-6',
-    bl: 'bottom-6 left-6',
-    tr: 'top-24 right-6',
-    tl: 'top-24 left-6',
+    br: 'bottom-4 right-3 sm:bottom-6 sm:right-6',
+    bl: 'bottom-4 left-3 sm:bottom-6 sm:left-6',
+    tr: 'top-20 right-3 sm:top-24 sm:right-6',
+    tl: 'top-20 left-3 sm:top-24 sm:left-6',
 };
 </script>
 
@@ -36,7 +36,7 @@ const positionClasses: Record<string, string> = {
             class="flex flex-col gap-2"
         >
             <div
-                v-for="(action, i) in open ? actions : []"
+                v-for="action in open ? actions : []"
                 :key="action.label"
                 class="flex items-center gap-2"
             >
@@ -58,7 +58,7 @@ const positionClasses: Record<string, string> = {
         <Button
             variant="default"
             size="icon"
-            class="h-14 w-14 rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl active:scale-95"
+            class="h-12 w-12 rounded-2xl shadow-xl transition-all duration-300 hover:shadow-2xl active:scale-95 sm:h-14 sm:w-14"
             :class="open
                 ? 'bg-gradient-to-r from-red-500 to-rose-600 text-white rotate-45'
                 : 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white'"

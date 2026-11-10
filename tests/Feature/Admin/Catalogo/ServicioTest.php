@@ -74,3 +74,20 @@ test('servicio can be deleted', function () {
     $response->assertRedirect();
     $this->assertSoftDeleted('servicios', ['id' => $servicio->id]);
 });
+
+test('servicio caracteristicas json string is stored as array', function () {
+    $categoria = Categoria::factory()->create();
+
+    $this->actingAs($this->user)
+        ->post(route('admin.catalogo.servicios.store', $this->team), [
+            'categoria_id' => $categoria->id,
+            'nombre' => 'Servicio con características',
+            'caracteristicas' => '["Instalación profesional","Garantía 1 año"]',
+            'activo' => true,
+        ]);
+
+    $servicio = Servicio::where('nombre', 'Servicio con características')->first();
+
+    expect($servicio->caracteristicas)->toBeArray()
+        ->and($servicio->caracteristicas)->toBe(['Instalación profesional', 'Garantía 1 año']);
+});

@@ -9,6 +9,7 @@ use App\Models\Categoria;
 use App\Models\Servicio;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -50,7 +51,13 @@ class ServicioController extends Controller
     {
         $this->authorize('create', Servicio::class);
 
-        Servicio::create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('imagen')) {
+            $data['imagen'] = $request->file('imagen')->store('catalogo/servicios', 'public');
+        }
+
+        Servicio::create($data);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Servicio creado correctamente.']);
 
@@ -71,7 +78,19 @@ class ServicioController extends Controller
     {
         $this->authorize('update', $servicio);
 
-        $servicio->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('imagen')) {
+            $oldImage = $servicio->imagen;
+            $data['imagen'] = $request->file('imagen')->store('catalogo/servicios', 'public');
+            $servicio->update($data);
+
+            if ($oldImage && Storage::disk('public')->exists($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
+            }
+        } else {
+            $servicio->update($data);
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Servicio actualizado correctamente.']);
 

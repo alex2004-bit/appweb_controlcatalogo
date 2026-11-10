@@ -49,6 +49,16 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'edit_clientes', 'group' => 'Clientes'],
             ['name' => 'delete_clientes', 'group' => 'Clientes'],
 
+            ['name' => 'view_proveedores', 'group' => 'Abastecimiento'],
+            ['name' => 'create_proveedores', 'group' => 'Abastecimiento'],
+            ['name' => 'edit_proveedores', 'group' => 'Abastecimiento'],
+            ['name' => 'delete_proveedores', 'group' => 'Abastecimiento'],
+
+            ['name' => 'view_compras', 'group' => 'Abastecimiento'],
+            ['name' => 'create_compras', 'group' => 'Abastecimiento'],
+            ['name' => 'receive_compras', 'group' => 'Abastecimiento'],
+            ['name' => 'cancel_compras', 'group' => 'Abastecimiento'],
+
             ['name' => 'view_consultas', 'group' => 'Consultas'],
             ['name' => 'edit_consultas', 'group' => 'Consultas'],
             ['name' => 'delete_consultas', 'group' => 'Consultas'],
@@ -57,6 +67,11 @@ class RoleAndPermissionSeeder extends Seeder
             ['name' => 'create_cotizaciones', 'group' => 'Cotizaciones'],
             ['name' => 'edit_cotizaciones', 'group' => 'Cotizaciones'],
             ['name' => 'delete_cotizaciones', 'group' => 'Cotizaciones'],
+
+            ['name' => 'view_pedidos', 'group' => 'Pedidos'],
+            ['name' => 'create_pedidos', 'group' => 'Pedidos'],
+            ['name' => 'edit_pedidos', 'group' => 'Pedidos'],
+            ['name' => 'delete_pedidos', 'group' => 'Pedidos'],
 
             ['name' => 'view_pagos', 'group' => 'Pagos'],
             ['name' => 'create_pagos', 'group' => 'Pagos'],
@@ -91,8 +106,11 @@ class RoleAndPermissionSeeder extends Seeder
             'view_servicios', 'create_servicios', 'edit_servicios',
             'view_galeria', 'create_galeria', 'edit_galeria',
             'view_clientes', 'create_clientes', 'edit_clientes',
+            'view_proveedores', 'create_proveedores', 'edit_proveedores', 'delete_proveedores',
+            'view_compras', 'create_compras', 'receive_compras', 'cancel_compras',
             'view_consultas', 'edit_consultas',
             'view_cotizaciones', 'create_cotizaciones', 'edit_cotizaciones',
+            'view_pedidos', 'create_pedidos', 'edit_pedidos',
             'view_pagos', 'create_pagos', 'edit_pagos',
             'view_reportes', 'export_reportes',
             'view_configuracion', 'edit_configuracion',

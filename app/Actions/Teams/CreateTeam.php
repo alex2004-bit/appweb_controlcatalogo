@@ -6,7 +6,6 @@ use App\Enums\TeamRole;
 use App\Models\Team;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class CreateTeam
 {
@@ -18,7 +17,7 @@ class CreateTeam
         return DB::transaction(function () use ($user, $name, $isPersonal) {
             $team = Team::create([
                 'name' => $name,
-                'slug' => Str::slug($name).'-'.uniqid(),
+                'slug' => Team::generateUniqueTeamSlug($name),
                 'is_personal' => $isPersonal,
             ]);
 

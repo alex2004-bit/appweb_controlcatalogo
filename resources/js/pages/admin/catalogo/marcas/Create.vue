@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
-import { Tag } from '@lucide/vue';
+import { Tag, Save, X } from '@lucide/vue';
 import MarcaController from '@/actions/App/Http/Controllers/Admin/Catalogo/MarcaController';
 import InputError from '@/components/InputError.vue';
+import { FormSection, ModuleHeader } from '@/components/shared';
 import { Button } from '@/components/ui/button';
-import {
-    Card,
-    CardContent,
-    CardHeader,
-    CardTitle,
-} from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,85 +17,59 @@ const currentTeam = page.props.currentTeam as { slug: string } | null;
 <template>
     <Head title="Nueva Marca" />
 
-    <div class="flex flex-col space-y-6">
-        <div class="flex items-center gap-3">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/25">
-                <Tag class="h-5 w-5 text-white" />
-            </div>
-            <div>
-                <h1 class="text-lg font-semibold text-foreground">Nueva Marca</h1>
-                <p class="text-sm text-muted-foreground">Crear una nueva marca en el catálogo</p>
-            </div>
-        </div>
+    <div class="flex flex-col gap-6">
+        <ModuleHeader title="Nueva Marca" description="Crear una nueva marca en el catálogo" :icon="Tag">
+            <template #actions>
+                <Link :href="route('admin.catalogo.marcas.index')">
+                    <Button variant="outline" class="rounded-lg border-gray-200 text-gray-600 hover:text-gray-800">
+                        <X class="mr-2 h-4 w-4" /> Cancelar
+                    </Button>
+                </Link>
+            </template>
+        </ModuleHeader>
 
-        <Card class="border-border/50 shadow-xl">
-            <CardHeader>
-                <div class="flex items-center gap-2">
-                    <div class="h-1 w-8 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600" />
-                    <CardTitle class="text-base font-semibold">Datos de la marca</CardTitle>
-                </div>
-            </CardHeader>
-            <CardContent>
-                <Form
-                    v-bind="MarcaController.store.form(currentTeam?.slug ?? '')"
-                    class="space-y-6"
-                    v-slot="{ errors, processing }"
-                >
-                    <div class="grid gap-2">
+        <Form
+            v-bind="MarcaController.store.form(currentTeam?.slug ?? '')"
+            class="space-y-6"
+            v-slot="{ errors, processing }"
+        >
+            <FormSection title="Datos de la marca">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="grid gap-1.5">
                         <Label for="nombre">Nombre</Label>
-                        <Input
-                            id="nombre"
-                            name="nombre"
-                            placeholder="Nombre de la marca"
-                            class="rounded-xl border-border bg-card"
-                            required
-                        />
+                        <Input id="nombre" name="nombre" placeholder="Nombre de la marca" class="h-10 rounded-lg border-gray-300" required />
                         <InputError :message="errors.nombre" />
                     </div>
-
-                    <div class="grid gap-2">
-                        <Label for="logo">URL del logo (opcional)</Label>
-                        <Input
-                            id="logo"
-                            name="logo"
-                            placeholder="https://ejemplo.com/logo.png"
-                            class="rounded-xl border-border bg-card"
-                        />
+                    <div class="grid gap-1.5">
+                        <Label for="logo">Logo</Label>
+                        <Input id="logo" name="logo" type="file" accept="image/jpeg,image/png,image/webp" class="h-10 rounded-lg border-gray-300 file:mr-3 file:border-0 file:bg-blue-600 file:px-3 file:py-2 file:text-sm file:font-medium file:text-white" />
                         <InputError :message="errors.logo" />
                     </div>
+                </div>
 
-                    <div class="grid gap-2">
-                        <Label for="descripcion">Descripción</Label>
-                        <Textarea
-                            id="descripcion"
-                            name="descripcion"
-                            placeholder="Descripción de la marca"
-                        />
-                        <InputError :message="errors.descripcion" />
-                    </div>
+                <div class="grid gap-1.5">
+                    <Label for="descripcion">Descripción</Label>
+                    <Textarea id="descripcion" name="descripcion" placeholder="Descripción de la marca" class="rounded-lg border-gray-300" />
+                    <InputError :message="errors.descripcion" />
+                </div>
+            </FormSection>
 
-                    <div class="flex items-center gap-2">
-                        <Checkbox id="activo" name="activo" value="1" />
-                        <Label for="activo">Activo</Label>
-                        <InputError :message="errors.activo" />
-                    </div>
+            <div class="flex items-center gap-2 mb-4">
+                <Checkbox id="activo" name="activo" value="1" />
+                <Label for="activo">Activo</Label>
+                <InputError :message="errors.activo" />
+            </div>
 
-                    <div class="flex items-center gap-4 pt-2">
-                        <Button
-                            type="submit"
-                            :disabled="processing"
-                            class="bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-lg shadow-cyan-500/25 hover:from-cyan-400 hover:to-blue-500"
-                        >
-                            Guardar
-                        </Button>
-                        <Link :href="route('admin.catalogo.marcas.index')">
-                            <Button variant="outline" type="button" class="rounded-xl border-border bg-card hover:bg-accent/50">
-                                Cancelar
-                            </Button>
-                        </Link>
-                    </div>
-                </Form>
-            </CardContent>
-        </Card>
+            <div class="flex items-center gap-3">
+                <Button type="submit" :disabled="processing" class="bg-blue-600 text-white hover:bg-blue-700 shadow-sm rounded-lg px-6 h-10">
+                    <Save class="mr-2 h-4 w-4" /> Guardar
+                </Button>
+                <Link :href="route('admin.catalogo.marcas.index')">
+                    <Button variant="outline" type="button" class="rounded-lg border-gray-200 text-gray-600 hover:text-gray-800 h-10">
+                        Cancelar
+                    </Button>
+                </Link>
+            </div>
+        </Form>
     </div>
 </template>

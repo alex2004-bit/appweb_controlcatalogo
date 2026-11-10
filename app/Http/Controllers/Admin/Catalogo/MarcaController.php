@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Marca;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -32,10 +33,14 @@ class MarcaController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:150',
             'slug' => 'nullable|string|max:180|unique:marcas,slug',
-            'logo' => 'nullable|string|max:255',
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'descripcion' => 'nullable|string',
             'activo' => 'boolean',
         ]);
+
+        if ($request->hasFile('logo')) {
+            $validated['logo'] = $request->file('logo')->store('catalogo/marcas', 'public');
+        }
 
         Marca::create($validated);
 
@@ -54,13 +59,23 @@ class MarcaController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:150',
-            'slug' => 'nullable|string|max:180|unique:marcas,slug,' . $marca->id,
-            'logo' => 'nullable|string|max:255',
+            'slug' => 'nullable|string|max:180|unique:marcas,slug,'.$marca->id,
+            'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'descripcion' => 'nullable|string',
             'activo' => 'boolean',
         ]);
 
-        $marca->update($validated);
+        if ($request->hasFile('logo')) {
+            $oldLogo = $marca->logo;
+            $validated['logo'] = $request->file('logo')->store('catalogo/marcas', 'public');
+            $marca->update($validated);
+
+            if ($oldLogo && Storage::disk('public')->exists($oldLogo)) {
+                Storage::disk('public')->delete($oldLogo);
+            }
+        } else {
+            $marca->update($validated);
+        }
 
         return to_route('admin.catalogo.marcas.index')
             ->with('success', 'Marca actualizada correctamente.');

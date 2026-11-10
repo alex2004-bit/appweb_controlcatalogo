@@ -17,6 +17,10 @@ class UpdateGeneralesRequest extends FormRequest
             'moneda' => 'required|string|max:10',
             'impuesto' => 'required|numeric|min:0|max:100',
             'logo' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'qr_pago' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:2048',
+            'banner_imagen_1' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'banner_imagen_2' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'banner_imagen_3' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ];
     }
 }

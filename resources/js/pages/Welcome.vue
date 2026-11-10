@@ -5,11 +5,7 @@ import {
     ShieldCheck,
     Camera,
     Wrench,
-    X,
     MessageCircle,
-    Phone,
-    Mail,
-    MapPin,
     ChevronDown,
     Package,
     Building2,
@@ -19,41 +15,30 @@ import {
     BarChart3,
     Sparkles,
 } from '@lucide/vue';
-import { computed, ref } from 'vue';
 
-const isCartOpen = ref(false);
-const cartItems = ref<{ name: string; price: string }[]>([]);
+const whatsappNumber = '59164828148';
 
-function addToCart(item: { name: string; price: string }) {
-    cartItems.value.push(item);
-    isCartOpen.value = true;
+function addToCart(item: { nombre: string; precio: string }) {
+    const message = `Hola, quisiera cotizar este producto: ${item.nombre} (${item.precio}).`;
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
-function removeFromCart(index: number) {
-    cartItems.value.splice(index, 1);
-}
+function cotizarTodo() {
+    const products = productosDestacados
+        .map((product) => `- ${product.nombre} (${product.precio})`)
+        .join('\n');
+    const message = `Hola, quisiera cotizar estos productos:\n${products}`;
 
-const totalCarrito = computed(() =>
-    cartItems.value.reduce((acc, i) => acc + parseFloat((i.price ?? '0').replace('$', '').replace(',', '')), 0).toFixed(2)
-);
-
-const whatsappNumber = '521XXXXXXXXXX';
-
-function cotizarWhatsApp(items: { name: string; price: string }[]) {
-    const mensaje = items.length > 0
-        ? `Hola, me interesa cotizar los siguientes productos:%0A${items.map(i => `- ${i.name} (${i.price})`).join('%0A')}%0A%0A¿Podrían darme más información?`
-        : 'Hola, me gustaría recibir información sobre sus productos de seguridad y videovigilancia.';
-    window.open(`https://wa.me/${whatsappNumber}?text=${mensaje}`, '_blank');
-    isCartOpen.value = false;
+    window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
 }
 
 const productosDestacados = [
-    { nombre: 'Cámara 4K Ultra HD', desc: 'Resolución 3840x2160, visión nocturna, IP67', precio: '$4,299', categoria: 'Cámaras', img: 'https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?q=80&w=1974&auto=format&fit=crop' },
-    { nombre: 'DVR 16 Canales', desc: 'Grabación H.265+, 2 bahías HDD, remote access', precio: '$8,599', categoria: 'DVR/NVR', img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2034&auto=format&fit=crop' },
-    { nombre: 'Sensor de Movimiento', desc: 'Detección por microondas + infrarrojo, 12m alcance', precio: '$599', categoria: 'Sensores', img: 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=2070&auto=format&fit=crop' },
-    { nombre: 'Alarma Inalámbrica', desc: 'Panel LCD, sensor puerta/ventana, sirena 110dB', precio: '$2,899', categoria: 'Alarmas', img: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?q=80&w=2080&auto=format&fit=crop' },
-    { nombre: 'Control Biométrico', desc: 'Huella + tarjeta + PIN, 3000 usuarios, TCP/IP', precio: '$5,499', categoria: 'Control Acceso', img: 'https://images.unsplash.com/photo-1553034545-32d3fefc9f1f?q=80&w=1974&auto=format&fit=crop' },
-    { nombre: 'Cámara PTZ', desc: 'Zoom 30x, auto tracking, 360° continuo, PoE+', precio: '$12,999', categoria: 'Cámaras', img: 'https://images.unsplash.com/photo-1586105449897-20b5ef3233f1?q=80&w=1974&auto=format&fit=crop' },
+    { nombre: 'Cámara 4K Ultra HD', desc: 'Resolución 3840x2160, visión nocturna, IP67', precio: 'Bs 4.299', categoria: 'Cámaras', img: 'https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?q=80&w=1974&auto=format&fit=crop' },
+    { nombre: 'DVR 16 Canales', desc: 'Grabación H.265+, 2 bahías HDD, remote access', precio: 'Bs 8.599', categoria: 'DVR/NVR', img: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?q=80&w=2034&auto=format&fit=crop' },
+    { nombre: 'Sensor de Movimiento', desc: 'Detección por microondas + infrarrojo, 12m alcance', precio: 'Bs 599', categoria: 'Sensores', img: 'https://images.unsplash.com/photo-1558002038-1055907df827?q=80&w=2070&auto=format&fit=crop' },
+    { nombre: 'Alarma Inalámbrica', desc: 'Panel LCD, sensor puerta/ventana, sirena 110dB', precio: 'Bs 2.899', categoria: 'Alarmas', img: 'https://images.unsplash.com/photo-1582139329536-e7284fece509?q=80&w=2080&auto=format&fit=crop' },
+    { nombre: 'Control Biométrico', desc: 'Huella + tarjeta + PIN, 3000 usuarios, TCP/IP', precio: 'Bs 5.499', categoria: 'Control Acceso', img: 'https://images.unsplash.com/photo-1553034545-32d3fefc9f1f?q=80&w=1974&auto=format&fit=crop' },
+    { nombre: 'Cámara PTZ', desc: 'Zoom 30x, auto tracking, 360° continuo, PoE+', precio: 'Bs 12.999', categoria: 'Cámaras', img: 'https://images.unsplash.com/photo-1586105449897-20b5ef3233f1?q=80&w=1974&auto=format&fit=crop' },
 ];
 
 const stats = [
@@ -74,7 +59,7 @@ const features = [
 </script>
 
 <template>
-    <Head title="ControlCatálogo - Seguridad y Videovigilancia" />
+    <Head title="DOMOTECH - Seguridad y Videovigilancia" />
 
     <div class="min-h-screen bg-zinc-950 text-zinc-100">
         <!-- Header -->
@@ -84,7 +69,7 @@ const features = [
                     <div class="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/25">
                         <ShieldCheck class="h-5 w-5 text-zinc-950" />
                     </div>
-                    <span class="text-lg font-semibold tracking-tight">Control<span class="text-cyan-400">Catálogo</span></span>
+                    <span class="text-lg font-semibold tracking-tight">DOMOTECH</span>
                 </div>
                 <nav class="hidden md:flex items-center gap-6 text-sm text-zinc-400">
                     <a href="#productos" class="hover:text-cyan-400 transition">Productos</a>
@@ -139,14 +124,13 @@ const features = [
                         Ver productos
                         <ChevronDown class="h-5 w-5" />
                     </a>
-                    <a
-                        :href="`https://wa.me/${whatsappNumber}`"
-                        target="_blank"
-                        class="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-8 py-3.5 text-base font-medium text-zinc-300 transition hover:border-emerald-500 hover:text-emerald-400"
+                    <button
+                        @click="cotizarTodo"
+                        class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-8 py-3.5 text-base font-medium text-white shadow-lg shadow-emerald-500/25 transition-all hover:bg-emerald-500 hover:shadow-emerald-500/40 hover:scale-105"
                     >
                         <MessageCircle class="h-5 w-5" />
-                        Cotizar por WhatsApp
-                    </a>
+                        Cotizar Todo por WhatsApp
+                    </button>
                 </div>
             </div>
         </section>
@@ -210,7 +194,7 @@ const features = [
                         <div class="mt-4 flex items-center justify-between">
                             <span class="text-lg font-bold text-zinc-100">{{ p.precio }}</span>
                             <button
-                                @click="addToCart({ name: p.nombre, price: p.precio })"
+                                @click="addToCart({ nombre: p.nombre, precio: p.precio })"
                                 class="inline-flex items-center gap-1.5 rounded-lg bg-cyan-600/20 px-3 py-1.5 text-xs font-medium text-cyan-400 transition hover:bg-cyan-600 hover:text-white"
                             >
                                 <ShoppingCart class="h-3.5 w-3.5" />
@@ -273,13 +257,20 @@ const features = [
                         Contáctanos por WhatsApp para recibir asesoría personalizada en la selección de equipos de seguridad.
                     </p>
                     <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-                        <a
-                            :href="`https://wa.me/${whatsappNumber}`"
-                            target="_blank"
+                        <button
+                            @click="cotizarTodo"
                             class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 px-6 py-3 text-sm font-medium text-white transition hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-500/25"
                         >
                             <MessageCircle class="h-5 w-5" />
-                            Escribirnos ahora
+                            Cotizar Todo por WhatsApp
+                        </button>
+                        <a
+                            :href="`https://wa.me/${whatsappNumber}`"
+                            target="_blank"
+                            class="inline-flex items-center gap-2 rounded-lg border border-zinc-700 px-6 py-3 text-sm font-medium text-zinc-300 transition hover:border-emerald-500 hover:text-emerald-400"
+                        >
+                            <MessageCircle class="h-5 w-5" />
+                            Chat Directo
                         </a>
                     </div>
                 </div>
@@ -291,7 +282,7 @@ const features = [
             <div class="mx-auto flex max-w-7xl items-center justify-between px-6 text-sm text-zinc-600">
                 <div class="flex items-center gap-2">
                     <ShieldCheck class="h-4 w-4" />
-                    <span>ControlCatálogo &mdash; Seguridad y Videovigilancia</span>
+                    <span>DOMOTECH &mdash; Seguridad y Videovigilancia</span>
                 </div>
                 <span>&copy; {{ new Date().getFullYear() }} Todos los derechos reservados</span>
             </div>
@@ -308,62 +299,5 @@ const features = [
             <MessageCircle class="h-7 w-7 relative z-10" />
         </a>
 
-        <!-- Floating Cart -->
-        <div class="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-3">
-            <Transition
-                enter-active-class="transition-all duration-300 ease-out"
-                enter-from-class="opacity-0 scale-75 translate-y-4"
-                leave-active-class="transition-all duration-200 ease-in"
-                leave-to-class="opacity-0 scale-75 translate-y-4"
-            >
-                <div
-                    v-if="isCartOpen"
-                    class="mb-2 w-72 rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl shadow-cyan-500/10 overflow-hidden"
-                >
-                    <div class="flex items-center justify-between border-b border-zinc-800 px-4 py-3">
-                        <span class="text-sm font-medium text-zinc-200">Mi cotización</span>
-                        <button @click="isCartOpen = false" class="text-zinc-500 hover:text-zinc-300 transition">
-                            <X class="h-4 w-4" />
-                        </button>
-                    </div>
-                    <div class="max-h-60 overflow-y-auto px-4 py-2">
-                        <div v-for="(item, idx) in cartItems" :key="idx" class="flex items-center justify-between py-2 border-b border-zinc-800/50 last:border-0">
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm text-zinc-200 truncate">{{ item.name }}</p>
-                                <p class="text-xs text-cyan-400">{{ item.price }}</p>
-                            </div>
-                            <button @click="removeFromCart(idx)" class="ml-2 shrink-0 text-zinc-600 hover:text-red-400 transition">
-                                <X class="h-3.5 w-3.5" />
-                            </button>
-                        </div>
-                        <p v-if="cartItems.length === 0" class="py-4 text-center text-sm text-zinc-600">Carrito vacío</p>
-                    </div>
-                    <div class="border-t border-zinc-800 px-4 py-3" v-if="cartItems.length > 0">
-                        <div class="flex items-center justify-between mb-3">
-                            <span class="text-xs text-zinc-500">{{ cartItems.length }} producto(s)</span>
-                            <span class="text-sm font-semibold text-cyan-400">${{ totalCarrito }}</span>
-                        </div>
-                        <button
-                            @click="cotizarWhatsApp(cartItems)"
-                            class="flex w-full items-center justify-center gap-2 rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-emerald-500 hover:shadow-lg hover:shadow-emerald-500/25"
-                        >
-                            <MessageCircle class="h-4 w-4" />
-                            Cotizar por WhatsApp
-                        </button>
-                    </div>
-                </div>
-            </Transition>
-
-            <button
-                @click="isCartOpen = !isCartOpen"
-                class="group relative flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-blue-600 text-zinc-950 shadow-lg shadow-cyan-500/25 transition-all hover:shadow-xl hover:shadow-cyan-500/40 hover:scale-110 active:scale-95"
-                v-if="cartItems.length > 0"
-            >
-                <span class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white shadow-lg">
-                    {{ cartItems.length }}
-                </span>
-                <ShoppingCart class="h-5 w-5 relative z-10" />
-            </button>
-        </div>
     </div>
 </template>

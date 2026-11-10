@@ -10,6 +10,8 @@ use App\Models\Pago;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -73,24 +75,28 @@ class PagoController extends Controller
     {
         $this->authorize('create', Pago::class);
 
-        $cotizacion = Cotizacion::findOrFail($request->cotizacion_id);
-        $saldoPendiente = $cotizacion->saldo_pendiente;
-
-        if ($request->monto > $saldoPendiente) {
-            return back()->withErrors(['monto' => 'El monto del pago no puede exceder el saldo pendiente de $'.number_format($saldoPendiente, 2)]);
-        }
-
         $data = $request->validated();
 
-        if ($request->hasFile('comprobante')) {
-            $data['comprobante'] = $request->file('comprobante')->store('pagos/comprobantes', 'public');
-        }
+        $pago = DB::transaction(function () use ($data, $request): Pago {
+            $cotizacion = Cotizacion::whereKey($data['cotizacion_id'])
+                ->lockForUpdate()
+                ->firstOrFail();
+            $saldoPendiente = $cotizacion->saldo_pendiente;
 
-        $data['estado'] = 'completado';
+            if ((float) $data['monto'] > $saldoPendiente) {
+                throw ValidationException::withMessages([
+                    'monto' => 'El monto del pago no puede exceder el saldo pendiente de $'.number_format($saldoPendiente, 2),
+                ]);
+            }
 
-        $pago = Pago::create($data);
+            if ($request->hasFile('comprobante')) {
+                $data['comprobante'] = $request->file('comprobante')->store('pagos/comprobantes', 'public');
+            }
 
-        $this->actualizarEstadoCotizacion($cotizacion);
+            $data['estado'] = 'completado';
+
+            return Pago::create($data);
+        });
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Pago registrado correctamente.']);
 
@@ -136,35 +142,39 @@ class PagoController extends Controller
     {
         $this->authorize('update', $pago);
 
-        $ultimoPago = Pago::where('cotizacion_id', $pago->cotizacion_id)
-            ->latest()
-            ->first();
-
-        if ($ultimoPago->id !== $pago->id) {
-            Inertia::flash('toast', ['type' => 'error', 'message' => 'Solo se puede editar el último pago registrado.']);
-
-            return back();
-        }
-
-        $cotizacion = $pago->cotizacion;
-        $totalPagadoSinEste = $cotizacion->pagos()
-            ->where('id', '!=', $pago->id)
-            ->sum('monto');
-        $saldoDisponible = $cotizacion->total - $totalPagadoSinEste;
-
-        if ($request->monto > $saldoDisponible) {
-            return back()->withErrors(['monto' => 'El monto del pago no puede exceder el saldo pendiente de $'.number_format($saldoDisponible, 2)]);
-        }
-
         $data = $request->validated();
 
-        if ($request->hasFile('comprobante')) {
-            $data['comprobante'] = $request->file('comprobante')->store('pagos/comprobantes', 'public');
-        }
+        DB::transaction(function () use ($data, $request, $pago): void {
+            $cotizacion = Cotizacion::whereKey($pago->cotizacion_id)
+                ->lockForUpdate()
+                ->firstOrFail();
+            $ultimoPago = Pago::where('cotizacion_id', $pago->cotizacion_id)
+                ->latest()
+                ->first();
 
-        $pago->update($data);
+            if (! $ultimoPago || $ultimoPago->id !== $pago->id) {
+                throw ValidationException::withMessages([
+                    'pago' => 'Solo se puede editar el último pago registrado.',
+                ]);
+            }
 
-        $this->actualizarEstadoCotizacion($cotizacion);
+            $totalPagadoSinEste = $cotizacion->pagos()
+                ->where('id', '!=', $pago->id)
+                ->sum('monto');
+            $saldoDisponible = (float) $cotizacion->total - (float) $totalPagadoSinEste;
+
+            if ((float) $data['monto'] > $saldoDisponible) {
+                throw ValidationException::withMessages([
+                    'monto' => 'El monto del pago no puede exceder el saldo pendiente de $'.number_format($saldoDisponible, 2),
+                ]);
+            }
+
+            if ($request->hasFile('comprobante')) {
+                $data['comprobante'] = $request->file('comprobante')->store('pagos/comprobantes', 'public');
+            }
+
+            $pago->update($data);
+        });
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Pago actualizado correctamente.']);
 
@@ -186,10 +196,7 @@ class PagoController extends Controller
             return back();
         }
 
-        $cotizacion = $pago->cotizacion;
         $pago->delete();
-
-        $this->actualizarEstadoCotizacion($cotizacion);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Pago eliminado correctamente.']);
 
@@ -206,12 +213,5 @@ class PagoController extends Controller
         ]);
 
         return $pdf->download("recibo-pago-{$pago->id}.pdf");
-    }
-
-    private function actualizarEstadoCotizacion(Cotizacion $cotizacion): void
-    {
-        $cotizacion->load('pagos');
-        $totalPagado = $cotizacion->pagos->sum('monto');
-        $total = $cotizacion->total;
     }
 }

@@ -39,6 +39,7 @@ export function useConfirm() {
             background: 'var(--card)',
             color: 'var(--foreground)',
         });
+
         return result.isConfirmed;
     }
 

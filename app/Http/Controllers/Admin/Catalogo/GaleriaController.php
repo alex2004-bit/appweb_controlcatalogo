@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\Catalogo\UpdateGaleriaRequest;
 use App\Models\Galeria;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -30,7 +31,7 @@ class GaleriaController extends Controller
             ->withQueryString();
 
         return Inertia::render('admin/catalogo/galeria/Index', [
-            'imagenes' => $imagenes,
+            'galeria' => $imagenes,
             'filters' => ['search' => $search, 'tipo' => $tipo],
         ]);
     }
@@ -58,6 +59,10 @@ class GaleriaController extends Controller
         $data = $request->validated();
 
         if ($request->hasFile('imagen')) {
+            // Eliminar imagen anterior si existe
+            if ($galeria->imagen && Storage::disk('public')->exists($galeria->imagen)) {
+                Storage::disk('public')->delete($galeria->imagen);
+            }
             $data['imagen'] = $request->file('imagen')->store('galeria', 'public');
         }
 
@@ -73,6 +78,11 @@ class GaleriaController extends Controller
     public function destroy(Galeria $galeria): RedirectResponse
     {
         $this->authorize('delete', $galeria);
+
+        // Eliminar archivo de imagen del almacenamiento
+        if ($galeria->imagen && Storage::disk('public')->exists($galeria->imagen)) {
+            Storage::disk('public')->delete($galeria->imagen);
+        }
 
         $galeria->delete();
 

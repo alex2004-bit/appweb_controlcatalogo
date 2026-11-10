@@ -9,26 +9,26 @@ class PedidoPolicy
 {
     public function viewAny(User $user): bool
     {
-        return true;
+        return $user->can('view_pedidos');
     }
 
     public function view(User $user, Pedido $pedido): bool
     {
-        return true;
+        return $user->can('view_pedidos');
     }
 
     public function create(User $user): bool
     {
-        return true;
+        return $user->can('create_pedidos');
     }
 
     public function update(User $user, Pedido $pedido): bool
     {
-        return true;
+        return $user->can('edit_pedidos');
     }
 
     public function delete(User $user, Pedido $pedido): bool
     {
-        return true;
+        return $user->can('delete_pedidos');
     }
 }

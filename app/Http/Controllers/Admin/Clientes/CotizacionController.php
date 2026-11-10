@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\Clientes\StoreCotizacionRequest;
 use App\Http\Requests\Admin\Clientes\UpdateCotizacionRequest;
 use App\Models\Cliente;
+use App\Models\Configuracion;
 use App\Models\Cotizacion;
 use App\Models\DetalleCotizacion;
 use App\Models\Producto;
@@ -64,7 +65,7 @@ class CotizacionController extends Controller
             $subtotal += $itemSubtotal - $itemDescuento;
         }
 
-        $impuesto = $subtotal * 0.18;
+        $impuesto = $subtotal * Configuracion::impuestoRate();
         $total = $subtotal + $impuesto;
 
         $codigo = 'COT-'.now()->format('Ymd').'-'.str_pad((Cotizacion::max('id') ?? 0) + 1, 4, '0', STR_PAD_LEFT);
@@ -144,7 +145,7 @@ class CotizacionController extends Controller
             $subtotal += $itemSubtotal - $itemDescuento;
         }
 
-        $impuesto = $subtotal * 0.18;
+        $impuesto = $subtotal * Configuracion::impuestoRate();
         $total = $subtotal + $impuesto;
 
         $extra = [

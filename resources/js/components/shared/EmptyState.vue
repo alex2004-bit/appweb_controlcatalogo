@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { Inbox, Plus } from '@lucide/vue';
 import { Link } from '@inertiajs/vue3';
-import { Button } from '@/components/ui/button';
+import { Inbox, Plus } from '@lucide/vue';
 import type { Component } from 'vue';
+import { Button } from '@/components/ui/button';
 
 type Action = {
     label: string;
@@ -24,11 +24,11 @@ defineProps<{
 <template>
     <div :class="['flex flex-col items-center justify-center text-center', compact ? 'py-10' : 'py-20']">
         <div v-if="gradient" class="flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br mb-5 shadow-lg" :class="gradient ?? 'from-cyan-500/10 to-blue-600/10'">
-            <component :is="icon ?? Inbox" class="h-10 w-10" :class="gradient ? 'text-white' : 'text-muted-foreground/40'" />
+            <component :is="icon ?? Inbox" class="h-10 w-10" :class="gradient ? 'text-white' : 'text-muted-foreground/60'" />
         </div>
-        <component v-else :is="icon ?? Inbox" class="mb-4 h-16 w-16 text-muted-foreground/30" />
+        <component v-else :is="icon ?? Inbox" class="mb-4 h-16 w-16 text-muted-foreground/50" />
         <h3 class="text-lg font-semibold text-foreground">{{ title ?? 'Sin registros' }}</h3>
-        <p class="mt-1 max-w-sm text-sm text-muted-foreground">
+        <p class="mt-1 max-w-sm text-sm text-gray-500">
             {{ description ?? 'No hay datos disponibles para mostrar.' }}
         </p>
         <div v-if="action" class="mt-5">

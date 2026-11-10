@@ -21,6 +21,9 @@ class PedidoFactory extends Factory
             'impuesto' => 18.00,
             'descuento' => 0,
             'total' => 118.00,
+            'anticipo' => 0,
+            'numero_cuotas' => 1,
+            'plazo_dias' => null,
             'estado' => 'pendiente',
             'pagado' => false,
         ];

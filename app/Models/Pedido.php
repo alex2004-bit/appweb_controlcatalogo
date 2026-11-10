@@ -15,15 +15,27 @@ class Pedido extends Model
     protected $fillable = [
         'codigo',
         'cliente_id',
+        'cotizacion_id',
         'created_by',
+        'vendedor_id',
+        'referido_por',
         'subtotal',
         'impuesto',
         'descuento',
         'total',
+        'anticipo',
+        'numero_cuotas',
+        'plazo_dias',
         'estado',
         'metodo_pago',
         'pagado',
         'notas',
+        'direccion_entrega',
+        'ciudad',
+        'provincia',
+        'tipo_entrega',
+        'fecha_entrega',
+        'telefono_contacto',
         'completado_at',
         'cancelado_at',
     ];
@@ -35,7 +47,9 @@ class Pedido extends Model
             'impuesto' => 'decimal:2',
             'descuento' => 'decimal:2',
             'total' => 'decimal:2',
+            'anticipo' => 'decimal:2',
             'pagado' => 'boolean',
+            'fecha_entrega' => 'datetime',
             'completado_at' => 'datetime',
             'cancelado_at' => 'datetime',
         ];
@@ -46,9 +60,19 @@ class Pedido extends Model
         return $this->belongsTo(Cliente::class);
     }
 
+    public function cotizacion(): BelongsTo
+    {
+        return $this->belongsTo(Cotizacion::class);
+    }
+
     public function creador(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function vendedor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'vendedor_id');
     }
 
     public function detalles(): HasMany
@@ -58,7 +82,11 @@ class Pedido extends Model
 
     public function getSaldoPendienteAttribute(): float
     {
-        return $this->pagado ? 0 : (float) $this->total;
+        if ($this->pagado) {
+            return 0;
+        }
+
+        return (float) $this->total - (float) $this->anticipo;
     }
 
     public function getEstadoPagoAttribute(): string

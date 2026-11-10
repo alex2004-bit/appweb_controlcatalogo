@@ -3,6 +3,8 @@ import { Head, Link } from '@inertiajs/vue3';
 import { Percent, Tag, PackageOpen } from '@lucide/vue';
 import { computed } from 'vue';
 import Pagination from '@/components/shared/Pagination.vue';
+import { useMoney } from '@/composables/useMoney';
+import { DEFAULT_PRODUCT_IMAGE as defaultImg } from '@/constants/images';
 import type { PaginatedData } from '@/types';
 
 type ProductoOferta = {
@@ -21,26 +23,33 @@ const props = defineProps<{
     productos: PaginatedData<ProductoOferta>;
 }>();
 
-const defaultImg = 'https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?q=80&w=1974&auto=format&fit=crop';
+const money = useMoney();
 
 const ofertas = computed(() => props.productos.data.filter(p => p.precio_anterior !== null && parseFloat(p.precio_anterior) > parseFloat(p.precio)));
 
 function calcularDescuento(precio: string, anterior: string | null): number {
-    if (!anterior) return 0;
+    if (!anterior) {
+return 0;
+}
+
     const p = parseFloat(precio);
     const a = parseFloat(anterior);
-    if (a <= 0 || p <= 0) return 0;
+
+    if (a <= 0 || p <= 0) {
+return 0;
+}
+
     return Math.round((1 - p / a) * 100);
 }
 </script>
 
 <template>
-    <Head title="Ofertas - ControlCatálogo" />
+    <Head title="Ofertas" />
 
     <div class="min-h-screen bg-gray-50">
         <!-- Header Section -->
         <section class="bg-white border-b border-gray-200 py-10">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
                     <Link href="/" class="hover:text-blue-600 transition">Inicio</Link>
                     <span>/</span>
@@ -53,7 +62,7 @@ function calcularDescuento(precio: string, anterior: string | null): number {
 
         <!-- Products Section -->
         <section class="py-10">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <div class="flex items-center justify-between mb-6">
                     <p class="text-sm text-gray-500">
                         <span class="text-gray-900 font-semibold">{{ ofertas.length }}</span>
@@ -72,7 +81,7 @@ function calcularDescuento(precio: string, anterior: string | null): number {
                     </p>
                     <Link
                         href="/productos"
-                        class="mt-6 inline-flex items-center gap-2 rounded-full bg-blue-600 px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/40"
+                        class="mt-6 inline-flex items-center gap-2 rounded-full bg-blue-600 px-4 sm:px-6 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/25 transition-all hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/40"
                     >
                         <Tag class="h-4 w-4" />
                         Ver catálogo completo
@@ -80,17 +89,17 @@ function calcularDescuento(precio: string, anterior: string | null): number {
                 </div>
 
                 <!-- Grid -->
-                <div v-else class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                <div v-else class="grid grid-cols-1 gap-4 min-[375px]:grid-cols-2 sm:gap-6 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                     <div
                         v-for="p in ofertas"
                         :key="p.id"
-                        class="group bg-white rounded-xl border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/5 hover:-translate-y-1"
+                        class="group min-w-0 overflow-hidden rounded-xl border border-gray-200 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-blue-500/5"
                     >
                         <Link :href="'/productos/' + p.slug" class="block relative aspect-[4/3] overflow-hidden bg-gray-100">
                             <img
                                 :src="p.imagen || defaultImg"
                                 :alt="p.nombre"
-                                class="absolute inset-0 w-full h-full object-cover transition-all duration-500 ease-out group-hover:scale-110"
+                                class="absolute inset-0 w-full h-full object-contain transition-all duration-500 ease-out group-hover:scale-110"
                                 loading="lazy"
                             />
                             <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -110,7 +119,7 @@ function calcularDescuento(precio: string, anterior: string | null): number {
                             </span>
                         </Link>
 
-                        <div class="p-5">
+                        <div class="p-3 sm:p-5">
                             <Link :href="'/productos/' + p.slug" class="block">
                                 <h3 class="text-sm font-semibold text-gray-900 leading-snug group-hover:text-blue-600 transition-colors line-clamp-2">
                                     {{ p.nombre }}
@@ -120,14 +129,14 @@ function calcularDescuento(precio: string, anterior: string | null): number {
                                 </p>
                             </Link>
 
-                            <div class="mt-4 flex items-end justify-between gap-2">
-                                <div class="flex flex-col">
+                            <div class="mt-3 flex min-w-0 flex-col items-start gap-2 sm:mt-4 sm:flex-row sm:items-end sm:justify-between">
+                                <div class="flex min-w-0 flex-col">
                                     <span class="text-xs text-gray-400 line-through" v-if="p.precio_anterior">
-                                        ${{ parseFloat(p.precio_anterior).toLocaleString('es-MX', { minimumFractionDigits: 2 }) }}
+                                        {{ money.format(p.precio_anterior) }}
                                     </span>
-                                    <div class="flex items-center gap-2">
-                                        <span class="text-lg font-bold text-blue-600">
-                                            ${{ parseFloat(p.precio).toLocaleString('es-MX', { minimumFractionDigits: 2 }) }}
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class="break-words text-base font-bold text-blue-600 sm:text-lg">
+                                            {{ money.format(p.precio) }}
                                         </span>
                                         <span
                                             v-if="p.precio_anterior"

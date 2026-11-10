@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\Catalogo\UpdateCategoriaRequest;
 use App\Models\Categoria;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -23,7 +24,9 @@ class CategoriaController extends Controller
         $categorias = Categoria::with('parent')
             ->when($search, fn ($q) => $q->where('nombre', 'like', "%{$search}%"))
             ->when($estado !== null, fn ($q) => $q->where('activo', $estado === 'activo'))
-            ->latest()
+            ->orderByRaw('parent_id IS NOT NULL')
+            ->orderBy('parent_id')
+            ->orderBy('nombre')
             ->paginate(10)
             ->withQueryString();
 
@@ -48,7 +51,13 @@ class CategoriaController extends Controller
     {
         $this->authorize('create', Categoria::class);
 
-        Categoria::create($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('imagen')) {
+            $data['imagen'] = $request->file('imagen')->store('catalogo/categorias', 'public');
+        }
+
+        Categoria::create($data);
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Categoría creada correctamente.']);
 
@@ -74,7 +83,19 @@ class CategoriaController extends Controller
     {
         $this->authorize('update', $categoria);
 
-        $categoria->update($request->validated());
+        $data = $request->validated();
+
+        if ($request->hasFile('imagen')) {
+            $oldImage = $categoria->imagen;
+            $data['imagen'] = $request->file('imagen')->store('catalogo/categorias', 'public');
+            $categoria->update($data);
+
+            if ($oldImage && Storage::disk('public')->exists($oldImage)) {
+                Storage::disk('public')->delete($oldImage);
+            }
+        } else {
+            $categoria->update($data);
+        }
 
         Inertia::flash('toast', ['type' => 'success', 'message' => 'Categoría actualizada correctamente.']);
 

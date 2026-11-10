@@ -1,0 +1,1 @@
+export const DEFAULT_PRODUCT_IMAGE = 'https://images.unsplash.com/photo-1557324232-b8917d3c3dcb?q=80&w=1974&auto=format&fit=crop';

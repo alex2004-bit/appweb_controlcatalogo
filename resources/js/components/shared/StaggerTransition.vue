@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { TransitionGroup } from 'vue';
-
 withDefaults(defineProps<{
     tag?: string;
     move?: boolean;

@@ -10,9 +10,15 @@ class Configuracion extends Model
 
     protected $fillable = [
         'nombre_empresa',
+        'ruc',
         'logo',
+        'qr_pago',
+        'banner_imagen_1',
+        'banner_imagen_2',
+        'banner_imagen_3',
         'telefono',
-        'correo',
+        'email',
+        'website',
         'direccion',
         'moneda',
         'impuesto',
@@ -20,4 +26,16 @@ class Configuracion extends Model
         'facebook',
         'instagram',
     ];
+
+    public static function impuestoRate(): float
+    {
+        $impuesto = (float) (static::query()->first()?->impuesto ?? 18);
+
+        return $impuesto / 100;
+    }
+
+    public static function moneda(): string
+    {
+        return static::query()->first()?->moneda ?: 'Bs';
+    }
 }

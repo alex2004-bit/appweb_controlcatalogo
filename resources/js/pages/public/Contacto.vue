@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
-import { MessageCircle, Mail, MapPin, Phone, Clock, Send, CheckCircle, AlertCircle } from '@lucide/vue';
+import { MessageCircle, Mail, MapPin, Clock, Send, CheckCircle, AlertCircle } from '@lucide/vue';
 import { computed } from 'vue';
 
-const whatsappNumber = '521XXXXXXXXXX';
+const whatsappNumber = '59164828148';
 
 const page = usePage();
-const sent = computed(() => page.props.flash?.contact_sent);
+const sent = computed(() => (page.props.flash as { contact_sent?: boolean } | undefined)?.contact_sent);
 
 const form = useForm({
     nombre: '',
@@ -24,20 +24,20 @@ function handleSubmit() {
 }
 
 const contactInfo = [
-    { icon: MessageCircle, label: 'WhatsApp', value: '+52 1 55 1234 5678', href: `https://wa.me/${whatsappNumber}`, color: 'emerald' },
-    { icon: Mail, label: 'Email', value: 'info@controlcatalogo.com', href: 'mailto:info@controlcatalogo.com', color: 'blue' },
+    { icon: MessageCircle, label: 'WhatsApp', value: '+591 64828148', href: `https://wa.me/${whatsappNumber}`, color: 'emerald' },
+    { icon: Mail, label: 'Email', value: 'penarandacarbajaljuan@gmail.com', href: 'mailto:penarandacarbajaljuan@gmail.com', color: 'blue' },
     { icon: MapPin, label: 'Ubicación', value: 'Villa Tunari, Cochabamba, Bolivia', href: null, color: 'blue' },
     { icon: Clock, label: 'Horario', value: 'Lun-Sáb 08:00-19:00', href: null, color: 'amber' },
 ];
 </script>
 
 <template>
-    <Head title="Contacto - ControlCatálogo" />
+    <Head title="Contacto" />
 
     <div class="min-h-screen bg-gray-50">
         <!-- Header -->
         <section class="bg-white border-b border-gray-200 py-10">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <div class="flex items-center gap-2 text-xs text-gray-400 mb-4">
                     <Link href="/" class="hover:text-blue-600 transition">Inicio</Link>
                     <span>/</span>
@@ -53,17 +53,17 @@ const contactInfo = [
 
         <!-- Contact Content -->
         <section class="py-12">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
-                <div class="grid gap-10 lg:grid-cols-5">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
+                <div class="grid min-w-0 gap-10 lg:grid-cols-5">
                     <!-- Contact Info -->
-                    <div class="lg:col-span-2 space-y-4">
+                    <div class="min-w-0 space-y-4 lg:col-span-2">
                         <h2 class="text-lg font-semibold text-gray-900 mb-4">Información de contacto</h2>
                         <a
                             v-for="item in contactInfo"
                             :key="item.label"
                             :href="item.href ?? '#'"
                             :target="item.href?.startsWith('http') ? '_blank' : undefined"
-                            class="flex items-start gap-4 rounded-xl border border-gray-200 bg-white p-5 transition hover:shadow-md"
+                            class="flex min-w-0 items-start gap-4 rounded-xl border border-gray-200 bg-white p-4 transition hover:shadow-md sm:p-5"
                         >
                             <div
                                 class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg"
@@ -71,15 +71,15 @@ const contactInfo = [
                             >
                                 <component :is="item.icon" class="h-5 w-5" />
                             </div>
-                            <div>
+                            <div class="min-w-0">
                                 <p class="text-xs text-gray-400">{{ item.label }}</p>
-                                <p class="text-sm text-gray-900 font-medium mt-0.5">{{ item.value }}</p>
+                                <p class="mt-0.5 break-words text-sm font-medium text-gray-900">{{ item.value }}</p>
                             </div>
                         </a>
                     </div>
 
                     <!-- Form -->
-                    <div class="lg:col-span-3">
+                    <div class="min-w-0 lg:col-span-3">
                         <div v-if="sent" class="flex flex-col items-center justify-center rounded-xl border border-emerald-200 bg-emerald-50 p-12 text-center">
                             <div class="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/25 mb-4">
                                 <CheckCircle class="h-8 w-8 text-white" />
@@ -170,7 +170,7 @@ const contactInfo = [
 
         <!-- Google Maps -->
         <section class="border-t border-gray-200 bg-white py-10">
-            <div class="mx-auto w-full max-w-[1400px] px-6">
+            <div class="mx-auto w-full max-w-[1400px] px-4 sm:px-6">
                 <h2 class="text-lg font-semibold text-gray-900 mb-4">Ubicación</h2>
                 <div class="rounded-xl overflow-hidden border border-gray-200 shadow-sm">
                     <iframe
@@ -178,10 +178,10 @@ const contactInfo = [
                         width="100%"
                         height="350"
                         style="border:0;"
-                        allowfullscreen=""
+                        :allowfullscreen="true"
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
-                        title="Ubicación de ControlCatálogo"
+                        title="Ubicación de DOMOTECH"
                     />
                 </div>
             </div>
@@ -189,7 +189,7 @@ const contactInfo = [
 
         <!-- WhatsApp CTA -->
         <section class="bg-gradient-to-r from-blue-600 to-indigo-700 py-16">
-            <div class="mx-auto max-w-3xl px-6 text-center">
+            <div class="mx-auto max-w-3xl px-4 sm:px-6 text-center">
                 <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-white/20 backdrop-blur-sm mb-4">
                     <MessageCircle class="h-8 w-8 text-white" />
                 </div>

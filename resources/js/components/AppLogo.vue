@@ -9,6 +9,6 @@ import AppLogoIcon from '@/components/AppLogoIcon.vue';
         <AppLogoIcon class="size-5 fill-current text-white" />
     </div>
     <div class="ml-1 grid flex-1 text-left text-sm">
-        <span class="mb-0.5 truncate leading-tight font-semibold text-sidebar-foreground">Control<span class="text-cyan-400">Catálogo</span></span>
+        <span class="mb-0.5 truncate leading-tight font-semibold text-sidebar-foreground">DOMOTECH</span>
     </div>
 </template>

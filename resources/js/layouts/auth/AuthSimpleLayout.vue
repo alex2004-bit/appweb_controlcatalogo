@@ -25,7 +25,7 @@ defineProps<{
                 <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-2xl bg-white/15 backdrop-blur-sm shadow-2xl ring-1 ring-white/20">
                     <ShieldCheck class="h-10 w-10 text-white" />
                 </div>
-                <h1 class="mt-8 text-4xl font-bold tracking-tight text-white drop-shadow-lg">ControlCatálogo</h1>
+                <h1 class="mt-8 text-4xl font-bold tracking-tight text-white drop-shadow-lg">DOMOTECH</h1>
                 <p class="mt-4 max-w-md text-lg text-white/80 leading-relaxed drop-shadow">
                     Plataforma profesional de gestión de catálogos de seguridad y videovigilancia
                 </p>
@@ -51,7 +51,7 @@ defineProps<{
             </div>
 
             <div class="absolute bottom-8 left-8 right-8 z-30">
-                <p class="text-center text-xs text-white/40">&copy; {{ new Date().getFullYear() }} ControlCatálogo. Todos los derechos reservados.</p>
+                <p class="text-center text-xs text-white/40">&copy; {{ new Date().getFullYear() }} DOMOTECH. Todos los derechos reservados.</p>
             </div>
         </div>
 
@@ -63,7 +63,7 @@ defineProps<{
                             <div class="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 shadow-lg shadow-cyan-500/25">
                                 <ShieldCheck class="h-6 w-6 text-white" />
                             </div>
-                            <span class="text-lg font-semibold tracking-tight">ControlCatálogo</span>
+                            <span class="text-lg font-semibold tracking-tight">DOMOTECH</span>
                         </Link>
                         <div class="space-y-2 text-center">
                             <h1 class="text-2xl font-bold tracking-tight">{{ title }}</h1>
